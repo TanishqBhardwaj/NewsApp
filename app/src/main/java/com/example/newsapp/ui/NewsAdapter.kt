@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.size.Scale
 import com.example.newsapp.R
 import com.example.newsapp.model.NewsItem
 
@@ -30,10 +32,19 @@ class NewsAdapter(
 
     inner class NewsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val newsImageView: ImageView = itemView.findViewById(R.id.newsImageView)
-        private val newsTextView: TextView = itemView.findViewById(R.id.newsTextView)
+        private val newsTitleTextView: TextView = itemView.findViewById(R.id.newsTitleTextView)
+        private val newsDescriptionTextView: TextView = itemView.findViewById(R.id.newsDescriptionTextView)
+        private val authorTextView: TextView = itemView.findViewById(R.id.authorTextView)
+        private val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
 
         fun bind(newsItem: NewsItem) {
-            newsTextView.text = newsItem.title
+            newsImageView.load(newsItem.urlToImage) {
+                scale(Scale.FIT)
+            }
+            newsTitleTextView.text = newsItem.title
+            newsDescriptionTextView.text = newsItem.description
+            authorTextView.text = newsItem.author
+            timeTextView.text = newsItem.publishedAt
         }
     }
 }

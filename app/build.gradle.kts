@@ -58,5 +58,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
 
+    // view model lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
+    // coil for image rendering
+    implementation("io.coil-kt:coil:2.6.0")
 }
