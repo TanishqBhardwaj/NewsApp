@@ -2,7 +2,7 @@ package com.example.newsapp.model
 
 data class NewsResponse (
     val status: String?,
-    val articles: List<NewsItem?>?
+    val articles: List<NewsItem>
 )
 
 data class NewsItem (
