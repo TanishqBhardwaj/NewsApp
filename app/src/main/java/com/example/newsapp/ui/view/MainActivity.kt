@@ -1,22 +1,26 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.view
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.databinding.ActivityMainBinding
 import com.example.newsapp.model.NewsItem
 import com.example.newsapp.model.NewsUiState
+import com.example.newsapp.ui.adapter.NewsAdapter
+import com.example.newsapp.utils.Constants
 import com.example.newsapp.viewmodel.NewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NewsAdapter.OnItemClickListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var newsAdapter: NewsAdapter
@@ -28,6 +32,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         loadingState()
         getNewsData()
+    }
+
+    override fun onItemClick(newsItem: NewsItem) {
+        Intent(this, WebViewActivity()::class.java).also {
+            it.putExtra(Constants.ARTICLE_URL, newsItem.url)
+            startActivity(it)
+        }
     }
 
     private fun getNewsData() {
@@ -54,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRecyclerView(newsList: List<NewsItem>) {
-        newsAdapter = NewsAdapter(newsList)
+        newsAdapter = NewsAdapter(newsList, this)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = newsAdapter
         loadedState()

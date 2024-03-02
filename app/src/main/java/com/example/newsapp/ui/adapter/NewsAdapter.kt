@@ -1,4 +1,4 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +13,7 @@ import com.example.newsapp.model.NewsItem
 
 class NewsAdapter(
     private var newsList: List<NewsItem>,
+    private val listener: OnItemClickListener
 ): RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
@@ -30,12 +31,27 @@ class NewsAdapter(
         return newsList.size
     }
 
-    inner class NewsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    interface OnItemClickListener {
+        fun onItemClick(newsItem: NewsItem)
+    }
+
+    inner class NewsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener  {
         private val newsImageView: ImageView = itemView.findViewById(R.id.newsImageView)
         private val newsTitleTextView: TextView = itemView.findViewById(R.id.newsTitleTextView)
         private val newsDescriptionTextView: TextView = itemView.findViewById(R.id.newsDescriptionTextView)
         private val authorTextView: TextView = itemView.findViewById(R.id.authorTextView)
         private val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(p0: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(newsList[position])
+            }
+        }
 
         fun bind(newsItem: NewsItem) {
             newsImageView.load(newsItem.urlToImage) {
