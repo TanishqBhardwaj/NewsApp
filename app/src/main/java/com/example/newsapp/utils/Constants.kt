@@ -4,5 +4,6 @@ object Constants {
     const val BASE_URL = "https://candidate-test-data-moengage.s3.amazonaws.com/Android/news-api-feed/staticResponse.json"
     const val HTTPS = "https://"
     const val ARTICLE_URL = "ARTICLE_URL"
+    const val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     const val SOMETHING_WENT_WRONG = "Something went wrong!"
 }

@@ -3,9 +3,11 @@ package com.example.newsapp.ui.view
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.newsapp.databinding.ActivityWebViewBinding
 import com.example.newsapp.utils.Constants
 import com.example.newsapp.utils.WebViewClientImpl
+import kotlinx.coroutines.launch
 
 class WebViewActivity: AppCompatActivity() {
 
@@ -37,11 +39,17 @@ class WebViewActivity: AppCompatActivity() {
     }
 
     private fun setWebView() {
-        val webView = binding.webView
-        webView.webViewClient = WebViewClientImpl()
         val articleUrl = intent.getStringExtra(Constants.ARTICLE_URL)
         if (articleUrl != null) {
-            webView.loadUrl(articleUrl)
+            val webView = binding.webView
+            // Rendering web view in separate coroutine as rendering is a heavy task for UI thread
+            lifecycleScope.launch {
+                webView.webViewClient = WebViewClientImpl()
+                webView.settings.loadWithOverviewMode = true
+                webView.settings.useWideViewPort = false
+                webView.settings.javaScriptEnabled = true
+                webView.loadUrl(articleUrl)
+            }
         }
     }
 }
