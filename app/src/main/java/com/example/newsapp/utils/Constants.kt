@@ -5,6 +5,7 @@ object Constants {
     const val HTTPS = "https://"
     const val ARTICLE_URL = "ARTICLE_URL"
     const val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    const val UI_DATE_FORMAT = "dd-MM-yyyy"
     const val NOTIFICATION_TITLE = "title"
     const val NOTIFICATION_DESCRIPTION = "description"
     const val NOTIFICATION_CHANNEL_ID = "news_channel"

@@ -7,9 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.size.Scale
 import com.example.newsapp.R
 import com.example.newsapp.model.NewsItem
+import com.example.newsapp.utils.Constants
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class NewsAdapter(
     private var newsList: List<NewsItem>,
@@ -54,13 +57,28 @@ class NewsAdapter(
         }
 
         fun bind(newsItem: NewsItem) {
-            newsImageView.load(newsItem.urlToImage) {
-                scale(Scale.FIT)
+            newsImageView.apply {
+                load(newsItem.urlToImage)
+                scaleType = ImageView.ScaleType.FIT_XY
             }
             newsTitleTextView.text = newsItem.title
             newsDescriptionTextView.text = newsItem.description
             authorTextView.text = newsItem.author
-            timeTextView.text = newsItem.publishedAt
+            timeTextView.text = getFormattedDate(newsItem.publishedAt)
+        }
+
+        // To format date in user format
+        private fun getFormattedDate(date: String?): String {
+            date.let {
+                val inputFormat = SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault())
+                val outputFormat = SimpleDateFormat(Constants.UI_DATE_FORMAT, Locale.getDefault())
+                try {
+                    return outputFormat.format(inputFormat.parse(date))
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                }
+            }
+            return ""
         }
     }
 }

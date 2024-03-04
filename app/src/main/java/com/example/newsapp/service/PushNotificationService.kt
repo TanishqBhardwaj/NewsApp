@@ -52,7 +52,7 @@ class PushNotificationService : FirebaseMessagingService() {
         builder
             .setContentTitle(title)
             .setContentText(message)
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.news_app_icon)
         val notification: Notification = builder.build()
         notificationManager.notify(0, notification)
     }
