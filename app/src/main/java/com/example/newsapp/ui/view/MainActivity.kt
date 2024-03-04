@@ -1,13 +1,19 @@
 package com.example.newsapp.ui.view
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newsapp.R
@@ -17,6 +23,8 @@ import com.example.newsapp.model.NewsUiState
 import com.example.newsapp.ui.adapter.NewsAdapter
 import com.example.newsapp.utils.Constants
 import com.example.newsapp.viewmodel.NewsViewModel
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,16 +32,27 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NewsAdapter.OnItemClickListener {
 
+    private val tag = "MainActivity"
     private lateinit var binding: ActivityMainBinding
     private lateinit var newsAdapter: NewsAdapter
     private val newsViewModel by viewModels<NewsViewModel>()
+
+    // Request permission launcher
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK can post notifications.
+        } else {
+            Toast.makeText(this, Constants.NOTIFICATION_PERMISSION_ERROR, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        loadingState()
-        setSupportActionBar(binding.toolbar)
+        setUpView()
         getNewsData()
     }
 
@@ -68,6 +87,13 @@ class MainActivity : AppCompatActivity(), NewsAdapter.OnItemClickListener {
             it.putExtra(Constants.ARTICLE_URL, newsItem.url)
             startActivity(it)
         }
+    }
+
+    private fun setUpView() {
+        loadingState()
+        setSupportActionBar(binding.toolbar)
+        requestPermissions()
+        fetchingFCMToken()
     }
 
     private fun getNewsData(latestInd: Boolean = true) {
@@ -108,5 +134,30 @@ class MainActivity : AppCompatActivity(), NewsAdapter.OnItemClickListener {
     private fun loadedState() {
         binding.progressBar.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
+    }
+
+    private fun requestPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK can post notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private fun fetchingFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(tag, Constants.FETCHING_FCM_TOKEN_FAILED, task.exception)
+                return@OnCompleteListener
+            }
+            val token = task.result
+            //TODO This token should not be logged (for security reasons), but doing it intentionally for testing for specific device
+            Log.d(tag, token)
+        })
     }
 }

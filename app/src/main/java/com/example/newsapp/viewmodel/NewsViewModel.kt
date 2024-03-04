@@ -93,6 +93,7 @@ class NewsViewModel @Inject constructor(private val newsRequest: NewsRequest): V
         }
     }
 
+    // converting this to improve security
     private fun ensureHttpsUrl(url: String): String {
         // Check if the URL starts with "https://"
         if (url.isNotBlank() && !url.startsWith(Constants.HTTPS)) {
